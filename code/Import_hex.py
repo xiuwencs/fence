@@ -1,6 +1,7 @@
 ﻿from scapy.all import *
 import csv
 import os
+from pathlib import Path
 
 def Non_deal(df):
     list_data = []
@@ -26,9 +27,8 @@ def export_pcapng_to_hex(pcapng_file, output_file):
     print("导出完成！")
 
 
-def import_file(pcapng_file, output_file):
-    dnp3_pcapng_file = 'D:/PyCharmProjects/FENCE/dataset/dnp3_100.pcap'
-    dnp3_file = os.path.normpath(dnp3_pcapng_file)
+def import_file(pcapng_file, output_file, protocol_name):
+    filename = protocol_name + "_file"
 
     export_pcapng_to_hex(pcapng_file, output_file)
     # 数据导入
@@ -48,14 +48,15 @@ def import_file(pcapng_file, output_file):
         next(reader)
         data = list(reader)
     data = Non_deal(data)
+    data_str = []
 
     if pcapng_file == 'coap_file' or pcapng_file == 'snmp_file':
         data = [row[44:] for row in data]
-    elif pcapng_file == 'qq.pcapng' or pcapng_file == 'stun_file':
+    elif pcapng_file == 'qq.pcapng' or filename == 'stun_file':
         data = [row[42:] for row in data]
     elif pcapng_file == 'dns_file':
         data = [row[28:] for row in data]
-    elif pcapng_file == dnp3_file:
+    elif pcapng_file == 'dnp3_file':
         data = [row[66:] for row in data]
     elif pcapng_file == 'nbns_file':
         print("1")

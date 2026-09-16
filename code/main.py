@@ -1,13 +1,10 @@
 ﻿# -*- coding: utf-8 -*-
-import csv
+from pathlib import Path
 import time
 start_time = time.time()
 from Import_hex import import_file
-
 from VariableFieldExtraction import entopy_anlysis
-
-from collections import defaultdict
-
+import argparse
 from LengthByteAssociationRecognition import len_cluster, cluster
 from LengthByteAssociationRecognition import x_kmeans
 import os
@@ -17,13 +14,20 @@ from LengthFieldExtraction import determine_field
 
 if __name__ == '__main__':
 
-    file = 'D:/PyCharmProjects/FENCE/dnp3_100.pcap'
-    trans_file = 'D:/paperdata/txtfile.txt'
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--protocol', nargs='+',
+                        default=['stun'], dest='protocol_name',
+                        help='protocol name')
 
+    args = parser.parse_args()
+    protocol_name = args.protocol_name[0]
+
+    file = Path("D:\\") / "PyCharmProjects" / "FENCE" / "dataset" / (protocol_name + ".pcapng")
     # 导入文件
     pcapng_file = os.path.normpath(file)
+    trans_file = 'D:/paperdata/txtfile.txt'
 
-    import_data = import_file(pcapng_file, trans_file)
+    import_data = import_file(pcapng_file, trans_file, protocol_name)
 
     # 消息类型聚类
     # 仅包含目标协议的数
@@ -53,5 +57,5 @@ if __name__ == '__main__':
 
     determine_field(cluster_data_k, offset, values_k, target_indices)
     end_time = time.time()
-    print(f"运行时间为：{end_time-start_time}")
+    print(f"runtime：{end_time-start_time}")
 
